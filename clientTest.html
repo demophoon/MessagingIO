@@ -6,6 +6,9 @@
         <script type='text/javascript'>
             var messagingTestClient = new MessagingIO("./serverTest.html");
             messagingTestClient.start();
+            // To-do
+            //  - Store messages in a queue in case of errors such as trying to
+            //    send a message before the iframe has completely loaded.
             messagingTestClient.sendMessage("Hello World");
         </script>
     </body>

@@ -1,6 +1,16 @@
+/*
+ * MessagingIO
+ * ===========
+ * core.js
+ * Core methods for basic functionality
+ */
+
 function MessagingIO(target) {
     if (target == undefined) {
-        this.initializeServer();
+        /* Allows MessagingIO to send message to its parent if inside of an
+         * iframe
+         */
+        this.target = window;
     } else {
         if (window === this) {
             return new MessagingIO(target);
@@ -17,6 +27,9 @@ function MessagingIO(target) {
     }
 
     this.messageReciever = function(e) {
+        // Handles messages from iframe
+        // To-do:
+        //  - Only accept messages from this.target
         console.log(e);
     }
     return this;
@@ -25,10 +38,11 @@ function MessagingIO(target) {
 // Used to chain together methods
 MessagingIO.prototype = {
     about: {
-        Version: "0.0.1",
+        // About
+        Version: "0.0.2",
         Author: "Britt Gresham",
         Created: "Fall 2013",
-        Updated: "October 7th, 2013",
+        Updated: "October 8th, 2013",
     },
     start: function() {
         // Start listening for messages
@@ -49,9 +63,9 @@ MessagingIO.prototype = {
         return this;
     },
     sendMessage: function(msg) {
+        // Send messages to target iframe
+        // To-do:
+        //  - Restrict messages to send only to domain of iframe
         this.target.postMessage(msg, "*");
     },
-    initializeServer: function() {
-        this.target = window;
-    }
 }
