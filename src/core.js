@@ -6,33 +6,59 @@
  */
 
 function MessagingIO(target) {
+
+    var self = this;
+
+    self.ready = false;
+    self.sendQueue = [];
+
     if (target == undefined) {
         /* Allows MessagingIO to send message to its parent if inside of an
          * iframe
          */
-        this.target = window;
+        self.target = window;
+        self.type = "SERVER";
     } else {
-        if (window === this) {
+        if (window === self) {
             return new MessagingIO(target);
         }
 
-        this.targetSource = target;
-        this.targetElement = document.createElement("iframe");
-        this.targetElement.setAttribute("src", this.targetSource);
-        this.targetElement.style.width = "1px";
-        this.targetElement.style.height = "1px";
-        document.body.appendChild(this.targetElement);
-        this.target = this.targetElement.contentWindow;
-
+        self.targetSource = target;
+        self.targetElement = document.createElement("iframe");
+        self.targetElement.setAttribute("src", self.targetSource);
+        self.targetElement.style.width = "1px";
+        self.targetElement.style.height = "1px";
+        document.body.appendChild(self.targetElement);
+        self.target = self.targetElement.contentWindow;
+        self.type = "CLIENT";
     }
+    console.log(self.type + ": Starting.");
 
-    this.messageReciever = function(e) {
+    self.messageReceiver = function(e) {
+        console.log(self.type + ": Message Received - " + e.data);
         // Handles messages from iframe
         // To-do:
-        //  - Only accept messages from this.target
+        //  - Only accept messages from self.target
         console.log(e);
     }
-    return this;
+    self.clearQueue = function() {
+        if (self.ready) {
+            console.log(self.type + ": Clearing Queue.");
+            while (self.sendQueue.length > 0) {
+                var msg = self.sendQueue.pop();
+                console.log(self.type + ": Sending Message - " + msg);
+                self.target.postMessage(msg, "*");
+            }
+        }
+    }
+    self.setReady = function() {
+        self.ready = true;
+        self.clearQueue();
+    },
+
+    window.addEventListener("addedToIOQueue", self.clearQueue, false);
+
+    return self;
 }
 
 // Used to chain together methods
@@ -42,23 +68,24 @@ MessagingIO.prototype = {
         Version: "0.0.2",
         Author: "Britt Gresham",
         Created: "Fall 2013",
-        Updated: "October 8th, 2013",
+        Updated: "October 8th, 2013"
     },
     start: function() {
         // Start listening for messages
         if (window.addEventListener) {
-            window.addEventListener("message", this.messageReciever, false);
+            window.addEventListener("message", this.messageReceiver, false);
         } else if (window.attachEvent) {
-            window.attachEvent("message", this.messageReciever);
+            window.attachEvent("message", this.messageReceiver);
         }
+        this.target.addEventListener("load", this.setReady, false);
         return this;
     },
     stop: function() {
         // Stops listening for messages
         if (window.removeEventListener) {
-            window.removeEventListener("message", this.messageReciever, false);
+            window.removeEventListener("message", this.messageReceiver, false);
         } else if (window.removeEvent) {
-            window.removeEvent("message", this.messageReciever);
+            window.removeEvent("message", this.messageReceiver);
         }
         return this;
     },
@@ -66,6 +93,14 @@ MessagingIO.prototype = {
         // Send messages to target iframe
         // To-do:
         //  - Restrict messages to send only to domain of iframe
-        this.target.postMessage(msg, "*");
-    },
+        this.sendQueue.push(msg);
+        var event = new CustomEvent("addedToIOQueue", {
+            message: msg,
+            time: new Date(),
+            bubbles: true,
+            cancelable: false
+        });
+        window.dispatchEvent(event);
+        return this;
+    }
 }
