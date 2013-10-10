@@ -36,9 +36,10 @@ function MessagingIO(target) {
 
     self.messageReceiver = function(e) {
         console.log(self.type + ": Message Received - " + e.data);
-        // Handles messages from iframe
-        // To-do:
-        //  - Only accept messages from self.target
+        /* Handles messages from iframe
+         * To-do:
+         *  - Only accept messages from self.target
+         */
         console.log(e);
     }
     self.clearQueue = function() {
@@ -65,10 +66,10 @@ function MessagingIO(target) {
 MessagingIO.prototype = {
     about: {
         // About
-        Version: "0.0.2",
+        Version: "0.0.3",
         Author: "Britt Gresham",
         Created: "Fall 2013",
-        Updated: "October 8th, 2013"
+        Updated: "October 10th, 2013"
     },
     start: function() {
         // Start listening for messages
@@ -90,9 +91,10 @@ MessagingIO.prototype = {
         return this;
     },
     sendMessage: function(msg) {
-        // Send messages to target iframe
-        // To-do:
-        //  - Restrict messages to send only to domain of iframe
+        /* Send messages to target iframe
+         * To-do:
+         *  - Restrict messages to send only to domain of iframe
+         */
         this.sendQueue.push(msg);
         var event = new CustomEvent("addedToIOQueue", {
             message: msg,
