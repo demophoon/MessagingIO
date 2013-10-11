@@ -17,7 +17,6 @@ function MessagingIO(target) {
          * iframe
          */
         self.target = window;
-        self.type = "SERVER";
     } else {
         if (window === self) {
             return new MessagingIO(target);
@@ -26,29 +25,22 @@ function MessagingIO(target) {
         self.targetSource = target;
         self.targetElement = document.createElement("iframe");
         self.targetElement.setAttribute("src", self.targetSource);
-        self.targetElement.style.width = "1px";
-        self.targetElement.style.height = "1px";
+        self.targetElement.style.display = "none";
         document.body.appendChild(self.targetElement);
         self.target = self.targetElement.contentWindow;
-        self.type = "CLIENT";
     }
-    console.log(self.type + ": Starting.");
 
     self.messageReceiver = function(e) {
-        console.log(self.type + ": Message Received - " + e.data);
-        /* Handles messages from iframe
-         * To-do:
-         *  - Only accept messages from self.target
-         */
-        console.log(e);
+        // Handles messages from iframe
+        if (self.target.location.origin == e.origin) {
+            console.log(e.data);
+        }
     }
     self.clearQueue = function() {
         if (self.ready) {
-            console.log(self.type + ": Clearing Queue.");
             while (self.sendQueue.length > 0) {
                 var msg = self.sendQueue.pop();
-                console.log(self.type + ": Sending Message - " + msg);
-                self.target.postMessage(msg, "*");
+                self.target.postMessage(msg, self.target.location.origin);
             }
         }
     }
@@ -91,10 +83,7 @@ MessagingIO.prototype = {
         return this;
     },
     sendMessage: function(msg) {
-        /* Send messages to target iframe
-         * To-do:
-         *  - Restrict messages to send only to domain of iframe
-         */
+        // Send messages to target iframe using queue
         this.sendQueue.push(msg);
         var event = new CustomEvent("addedToIOQueue", {
             message: msg,
