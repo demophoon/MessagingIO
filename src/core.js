@@ -5,15 +5,27 @@
  * Core methods for basic functionality
  */
 
-function MessagingIO(target) {
+function MessagingIO(options) {
 
     var self = this;
+
+    var defaults = {
+        target: undefined,
+        sendReciept: true,
+    }
+    if (options == undefined) {
+        options = {};
+    }
+    self.options = options;
+    self.utils.extend(defaults, self.options);
+
+    self.target = options.target;
 
     self.ready = false;
     self.sendQueue = [];
     self.receiveQueue = [];
 
-    if (target == undefined) {
+    if (self.target == undefined) {
         /* Allows MessagingIO to send message to its parent if inside of an
          * iframe
          */
@@ -23,7 +35,7 @@ function MessagingIO(target) {
             return new MessagingIO(target);
         }
 
-        self.targetSource = target;
+        self.targetSource = self.target;
         self.targetElement = document.createElement("iframe");
         self.targetElement.setAttribute("src", self.targetSource);
         self.targetElement.style.display = "none";
@@ -36,13 +48,17 @@ function MessagingIO(target) {
         if (self.target.location.origin == e.origin) {
             self.receiveQueue.push(e.data);
             var event = new CustomEvent("addedToInQueue", {
-                message: msg,
+                message: e.data,
                 time: new Date(),
                 bubbles: true,
                 cancelable: false
             });
             window.dispatchEvent(event);
         }
+    }
+    self.callback = function(e) {
+        // Work on callback functions
+        console.log(e);
     }
     self.flushQueues = function() {
         if (self.ready) {

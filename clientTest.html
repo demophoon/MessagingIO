@@ -4,7 +4,9 @@
     </head>
     <body>
         <script type='text/javascript'>
-            var messagingTestClient = new MessagingIO("./serverTest.html");
+            var messagingTestClient = new MessagingIO({
+                target: "./serverTest.html",
+            });
             messagingTestClient.start();
             messagingTestClient.sendMessage("Hello World");
         </script>
