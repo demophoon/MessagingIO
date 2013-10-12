@@ -50,6 +50,10 @@ function MessagingIO(target) {
                 var msg = self.sendQueue.pop();
                 self.target.postMessage(msg, self.target.location.origin);
             }
+            while (self.receiveQueue.length > 0) {
+                var msg = self.receiveQueue.pop();
+                self.callback(msg);
+            }
         }
     }
     self.setReady = function() {
@@ -71,6 +75,16 @@ MessagingIO.prototype = {
         Author: "Britt Gresham",
         Created: "Fall 2013",
         Updated: "October 11th, 2013"
+    },
+    utils: {
+        extend: function(defaults, options) {
+            var keys = Object.keys(defaults);
+            for (var x in keys) {
+                if (!(keys[x] in options)) {
+                    options[keys[x]] = defaults[keys[x]];
+                }
+            }
+        }
     },
     start: function() {
         // Start listening for messages
