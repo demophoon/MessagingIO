@@ -11,6 +11,7 @@ function MessagingIO(target) {
 
     self.ready = false;
     self.sendQueue = [];
+    self.receiveQueue = [];
 
     if (target == undefined) {
         /* Allows MessagingIO to send message to its parent if inside of an
@@ -33,10 +34,17 @@ function MessagingIO(target) {
     self.messageReceiver = function(e) {
         // Handles messages from iframe
         if (self.target.location.origin == e.origin) {
-            console.log(e.data);
+            self.receiveQueue.push(e.data);
+            var event = new CustomEvent("addedToInQueue", {
+                message: msg,
+                time: new Date(),
+                bubbles: true,
+                cancelable: false
+            });
+            window.dispatchEvent(event);
         }
     }
-    self.clearQueue = function() {
+    self.flushQueues = function() {
         if (self.ready) {
             while (self.sendQueue.length > 0) {
                 var msg = self.sendQueue.pop();
@@ -46,10 +54,11 @@ function MessagingIO(target) {
     }
     self.setReady = function() {
         self.ready = true;
-        self.clearQueue();
+        self.flushQueues();
     },
 
-    window.addEventListener("addedToIOQueue", self.clearQueue, false);
+    window.addEventListener("addedToOutQueue", self.flushQueues, false);
+    window.addEventListener("addedToInQueue", self.flushQueues, false);
 
     return self;
 }
@@ -85,7 +94,7 @@ MessagingIO.prototype = {
     sendMessage: function(msg) {
         // Send messages to target iframe using queue
         this.sendQueue.push(msg);
-        var event = new CustomEvent("addedToIOQueue", {
+        var event = new CustomEvent("addedToOutQueue", {
             message: msg,
             time: new Date(),
             bubbles: true,
