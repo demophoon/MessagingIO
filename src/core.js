@@ -67,10 +67,10 @@ function MessagingIO(target) {
 MessagingIO.prototype = {
     about: {
         // About
-        Version: "0.0.3",
+        Version: "0.0.4",
         Author: "Britt Gresham",
         Created: "Fall 2013",
-        Updated: "October 10th, 2013"
+        Updated: "October 11th, 2013"
     },
     start: function() {
         // Start listening for messages
