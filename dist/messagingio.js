@@ -1,9 +1,5 @@
-/*
- * MessagingIO
- * ===========
- * core.js
- * Core methods for basic functionality
- */
+/*! messagingio - v0.0.4 - 2013-10-17
+* Copyright (c) 2013 ; Licensed  */
 
 function MessagingIO(options) {
 
