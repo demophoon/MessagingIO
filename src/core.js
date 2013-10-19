@@ -8,10 +8,10 @@
 var MessagingIO = function() {
     var self = this;
     self.about = {
-        Version: "0.0.4",
+        Version: "0.0.5",
         Author: "Britt Gresham",
         Created: "Fall 2013",
-        Updated: "October 11th, 2013"
+        Updated: "October 18th, 2013"
     };
 
     self.defaults = {
@@ -53,7 +53,7 @@ var MessagingIO = function() {
         self.sendQueue = [];
         self.receiveQueue = [];
 
-        if (self.target == undefined) {
+        if (self.target === undefined) {
             /* Allows MessagingIO to send message to its parent if inside of an
              * iframe
              */
@@ -78,7 +78,7 @@ var MessagingIO = function() {
 
     self.messageReceiver = function(e) {
         // Handles messages from iframe
-        if (self.target.location.origin == e.origin) {
+        if (self.target.location.origin === e.origin) {
             self.receiveQueue.push(e.data);
             var event = new CustomEvent("addedToInQueue", {
                 message: e.data,
@@ -135,7 +135,7 @@ var MessagingIO = function() {
     };
 
     return function(options) {
-        if (options == undefined) {
+        if (options === undefined) {
             options = {};
         }
         self.initialize(options);

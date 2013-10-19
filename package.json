@@ -1,0 +1,21 @@
+{
+  "author": "Britt Gresham <brittcgresham@gmail.com> (http://www.brittg.com/)",
+  "name": "messagingio",
+  "description": "Javascript Library for easily sending messages to windows through the Window Messaging Api",
+  "version": "0.0.4",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/demophoon/MessagingIO.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-uglify": "~0.2.2"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
